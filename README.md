@@ -39,7 +39,7 @@ File | Description
 1-DataCollection.ipynb | Notebook with the Python code for collecting the required data from the OCC website.
 2-DataWrangling.ipynb | Notebook with the Python code for cleaning and preparing the data retrieved through web scraping.
 3-DataAnalysisViz.ipynb | Notebook with the Python code for analyzing and visualizing the data.
-Dataset_Clean.csv | CSV file with the cleaned job data  (Job, Salary, Company, Location).
+Dataset_Clean.csv | CSV file with the cleaned job data  (Job, Company, Location, Average Salary).
 Dataset_Raw.csv | CSV file with the raw data collected through web scraping (Job, Salary, Company, Location).
 Report.pdf | Complete report with the results obtained from the data.
 Slides.pdf | Slides with the most important insights gained from the data analysis.
