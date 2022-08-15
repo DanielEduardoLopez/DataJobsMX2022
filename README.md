@@ -1,4 +1,4 @@
-# Data Jobs Salaries in Mexico on August 2022
+# Data Jobs Salaries in August 2022 in Mexico
 #### by Daniel Eduardo López
 
 Email: **daniel-eduardo-lopez@outlook.com**
