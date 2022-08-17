@@ -1,4 +1,4 @@
-# Data Jobs Salaries in Mexico on August 2022
+# Data Jobs Salaries in August 2022 in Mexico
 #### by Daniel Eduardo López
 
 Email: **daniel-eduardo-lopez@outlook.com**
@@ -24,7 +24,7 @@ ____
 2) Data requirements: Data about job positions such as job name, salary, employer and location.
 3) Data was collected from the OCC Website (Mexico) on 03 August 2022, through web scraping with Selenium and BeautifulSoup.
 4) Data then was explored and cleaned with Pandas and Numpy. 
-5) Data was analyzed through descriptive and inferential statistics with Pandas and Scipy and visualized with Matplotlib, Seaborn and Folium. 
+5) Data was analyzed through descriptive and inferential statistics with Pandas, Scipy and Statsmodels and visualized with Matplotlib, Seaborn and Folium. 
 6) A dashboard was built with Plotly and Dash.
 7) A final report was written with the complete results obtained from the data.
 8) Some slides were prepared with the most important insights from the report.
