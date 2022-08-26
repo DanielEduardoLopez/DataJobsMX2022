@@ -1,3 +1,12 @@
+### DATA JOBS DASHBOARD
+
+"""
+By Daniel Eduardo López
+Date: 2022-08-24
+GitHub: https://github.com/DanielEduardoLopez
+LinkedIn: https://www.linkedin.com/in/daniel-eduardo-lopez
+"""
+
 #!pip install dash
 
 # Run this app with 'python 4-Dashboard.py' and
@@ -10,6 +19,7 @@ import dash
 from dash import html
 from dash import dcc
 from dash.dependencies import Input, Output
+from dash.exceptions import PreventUpdate
 import plotly.express as px
 
 # Read the Job data into a Pandas dataframe
@@ -27,26 +37,48 @@ def plot_pie_chart(df):
   pie_colors = ['#06477D','#84BDEC','#B4D4EF', '#C8E4FC','aliceblue']
   demand_job_plot = px.pie(job_df, values='Count', names='Job', color = 'Job', hole = 0.7,  
                            color_discrete_sequence=px.colors.sequential.Blues_r,
+                           height=400,
                            title='Demand of Data Jobs Per Category')
   demand_job_plot.update_traces(hoverinfo='label+percent+name', textinfo='percent', textfont_size=16,
                     marker=dict(colors=pie_colors, line=dict(color='white', width=4)))
+  demand_job_plot.update_layout(transition_duration=400, title_x=0.5)
   
   return demand_job_plot
 
 # Company Demand: Treemap
 def plot_treemap(df):
 
-  top = 30
+  top = 20
 
-  company_df = pd.pivot_table(data = df, index = ['Company'], columns = 'Job', values = 'Location', aggfunc = 'count').fillna(0).reset_index()
-  company_df['Total'] = company_df.sum(axis=1, numeric_only= True)
-  company_df = company_df.sort_values('Total', ascending = False)[:top]
+  #company_df = pd.pivot_table(data = df, index = ['Company'], columns = 'Job', values = 'Location', aggfunc = 'count').fillna(0).reset_index()
+  company_df =  df.groupby(by='Company', as_index=False)['Job'].count().sort_values(by = 'Job', ascending = False).\
+                rename(columns = {'Job': 'Vacancies'})[:top]
   company_df['Company'] = company_df['Company'].map(lambda x: x[:15])
+  company_df = company_df[company_df['Vacancies'] > 0]
 
-  demand_company_plot = px.treemap(company_df, path = [px.Constant("."), 'Company'], values='Total', color = 'Total', 
+  demand_company_plot = px.treemap(company_df, path = [px.Constant("."), 'Company'], values='Vacancies', color = 'Vacancies', 
                                   color_continuous_scale=px.colors.sequential.Blues,
-                                  title= f'Top {top} Companies Demanding Data Jobs',
-                                  labels={'Total':'Vacancies'})
+                                  title= f'Top {top} Companies Demanding Data Jobs'
+                                  )
+  demand_company_plot.update_layout(transition_duration=400)
+
+  return demand_company_plot
+
+# Alternative: Company Demand: Bar Chart
+def plot_barchart(df):
+
+  top = 15
+  company_df = df.groupby(by = 'Company', as_index= False)['Job'].count().sort_values(by = 'Job', ascending = False).rename(columns = {'Job': 'Vacancies'})[:top]
+  company_df['Company'] = company_df['Company'].map(lambda x: x[:25])
+  company_df = company_df[company_df['Vacancies'] > 0]
+
+  demand_company_plot = px.bar(company_df.sort_values(by = 'Vacancies'), x='Vacancies', y='Company',
+            color = 'Vacancies', color_continuous_scale=px.colors.sequential.Blues,
+            #text="Vacancies", 
+            height=450,
+            title= f'Top {top} Companies Demanding Data Jobs')
+  #demand_company_plot.update_traces(marker_color= '#06477D', marker_line_color='#06477D', textfont_size=11, textangle=0, textposition="outside", cliponaxis=False)
+  demand_company_plot.update_layout(transition_duration=400, title_x=0.5)
 
   return demand_company_plot
 
@@ -103,11 +135,12 @@ def plot_cloropleth(df):
                             color_continuous_scale="Blues",
                             scope="north america",
                             title='Demand of Data Jobs per Mexican State',
-                            labels={'Percentage':'Demand %'}
+                            labels={'Percentage':'National Demand %'}
                             )
-  demand_location_plot.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+  demand_location_plot.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, transition_duration=300)
   demand_location_plot.update_geos(fitbounds="locations", visible=False)
-
+  demand_location_plot.update_layout(transition_duration=400, title_x=0.5)
+  
   return demand_location_plot
 
 # Salary Per Job: Boxplot
@@ -123,9 +156,10 @@ def plot_boxplot(df):
                                   "Salary": "Monthly Salary (MXN)",
                                   "Job": "Data Job Category"},
                           title='Salary Per Data Job Category',
-                          width=600, height=600
+                          height=400
                           )
   salary_job_plot.update_traces(showlegend=False)
+  salary_job_plot.update_layout(transition_duration=400, title_x=0.5)
 
   return salary_job_plot
 
@@ -145,11 +179,12 @@ def plot_heatmap(df):
 
   salary_company_plot = px.density_heatmap(salary_company_df, y='Company', x = 'Job', z = 'Salary',
                           histfunc="avg", color_continuous_scale="Blues",
-                          width=720, height=720,
+                          height=720,
                           title='Salary Per Company And Data Job Category',
                           labels={"Job": "Data Job Category"}
                           )
-
+  salary_company_plot.update_layout(transition_duration=400, title_x=0.5, coloraxis_colorbar=dict(title="Avg. Mth. Salary (MXN)"))
+  salary_company_plot.update_coloraxes(colorbar_tickformat = '$,~s')
   return salary_company_plot
 
 # Salary Per Location: Contour plot
@@ -208,14 +243,17 @@ def plot_contour(df):
   salary_location_plot = px.density_contour(salary_location_df, y='State', x = 'Job', z = 'Salary',
                           histfunc="avg", 
                           color_discrete_sequence=px.colors.sequential.Blues_r,
-                          width=700, height=720,
+                          height=720,
                           title='Salary Per Location And Data Job Category',
                           labels={
                                   "State": "Location",
                                   'Job': 'Data Job Category'
                                   }
                           )
-  salary_location_plot.update_traces(contours_coloring="fill", contours_showlabels = True, colorscale = 'Blues')
+  salary_location_plot.update_traces(contours_coloring="fill", contours_showlabels = True, 
+                                    colorscale = 'Blues', colorbar_tickformat='$,~s',
+                                    colorbar_title_text='Avg. Mth. Salary (MXN)')
+  salary_location_plot.update_layout(transition_duration=400, title_x=0.5, coloraxis_colorbar=dict(title="Vacancies"))
 
   return salary_location_plot
 
@@ -223,7 +261,7 @@ def plot_contour(df):
 # Helper function for dropdowns
 def create_dropdown_options(series):
     options = [{'label': i, 'value': i} for i in series.sort_values().unique()]
-    options.append({'label': 'All', 'value': 'All'})
+    options.insert(0, {'label': 'All', 'value': 'All'})
     return options
 
 # Dash application
@@ -233,24 +271,42 @@ app = dash.Dash(__name__)
 app.layout = html.Div(children=[
                                 # First section
                                 # Adding Title
-                                html.H1('Data Jobs in Mexico Dashboard',
-                                        style={'textAlign': 'center', 'color': 'navy',
-                                               'font-size': 40, 'font-family': 'Tahoma'}),
+                                html.Div(children=[ html.H1('Data Jobs in Mexico Dashboard',
+                                        style={'textAlign': 'center', 'color': 'white',
+                                               'font-size': 40, 'font-family': 'Tahoma'})], 
+                                               style={'margin-top': '0',
+                                                      'width': '100%', 
+                                                      'height': '60px', 
+                                                      'background-color': 'navy', 
+                                                      'float': 'center', 
+                                                      'margin': '0'}  
+                                        ),
                                 
                                 # Adding Author
                                 html.P("By Daniel Eduardo López",
                                         style={'textAlign': 'center', 'color': 'navy',
-                                               'font-size': 18, 'font-family': 'Tahoma'}),
+                                               'font-size': 15, 'font-family': 'Tahoma'}),
+                                dcc.Link(html.A('GitHub'), href="https://github.com/DanielEduardoLopez",
+                                        style={'textAlign': 'center', 'color': 'navy',
+                                               'font-size': 12, 'font-family': 'Tahoma',
+                                               'margin': 'auto',
+                                               'display': 'block'}),
+                                html.Br(),
+                                dcc.Link(html.A('LinkedIn'), href="https://www.linkedin.com/in/daniel-eduardo-lopez",
+                                        style={'textAlign': 'center', 'color': 'navy',
+                                               'font-size': 12, 'font-family': 'Tahoma',
+                                               'margin': 'auto',
+                                               'display': 'block'}),
                                 html.Br(),
                                 
                                 # Adding a very brief Introduction to the Dashboard
                                 html.P("This Dashboard shows the Data Jobs demand and salaries in Mexico in August 2022.",
                                         style={'textAlign': 'center', 'color': 'black',
-                                               'font-size': 13, 'font-family': 'Tahoma'}),
+                                               'font-size': 14, 'font-family': 'Tahoma'}),
                                 
                                 html.P("Data was collected on August 3, 2022 from the OCC website.",
                                         style={'textAlign': 'center', 'color': 'black',
-                                               'font-size': 13, 'font-family': 'Tahoma'}),
+                                               'font-size': 14, 'font-family': 'Tahoma'}),
                                 html.Br(),
                                 
                                 # Second section: Dropdowns & Slider
@@ -258,49 +314,72 @@ app.layout = html.Div(children=[
                                 
                                       # Dropdown list to enable Data Job selection
                                       html.Br(),
-                                      html.Label("Data Job Selection:", className='dropdown-labels'),
+                                      html.Br(),
+                                      html.Label("Data Job Selection:", className='dropdown-labels',
+                                                style={'textAlign': 'left', 'color': 'navy',
+                                                  'font-size': 15, 'font-family': 'Tahoma'}
+                                                ),
                                       dcc.Dropdown(id='job_dropdown',
                                                   options=create_dropdown_options(df['Job']),
                                                   value='All',
                                                   placeholder="Select Data Job",
                                                   multi=True,
-                                                  searchable=True
+                                                  searchable=True,
+                                                  style={'textAlign': 'left', 'color': '#2e2d2d',
+                                                  'font-size': 14, 'font-family': 'Tahoma'}
                                                   ),
                                                                       
                                       # Dropdown list to enable Location selection
                                       html.Br(),
-                                      html.Label("Location Selection:", className='dropdown-labels'),
+                                      html.Br(),
+                                      html.Label("Location Selection:", className='dropdown-labels',
+                                                style={'textAlign': 'left', 'color': 'navy',
+                                                  'font-size': 15, 'font-family': 'Tahoma'}
+                                                ),
                                       dcc.Dropdown(id='location_dropdown',
                                                   options=create_dropdown_options(df['Location']),
                                                   value='All',
                                                   placeholder="Select Location",
                                                   multi=True,
-                                                  searchable=True
+                                                  searchable=True,
+                                                  style={'textAlign': 'left', 'color': '#2e2d2d',
+                                                  'font-size': 14, 'font-family': 'Tahoma'}
                                                   ),
                                 
                                       # Dropdown list to enable Company selection
                                       html.Br(),
-                                      html.Label("Company Selection:", className='dropdown-labels'),
+                                      html.Br(),
+                                      html.Label("Company Selection:", className='dropdown-labels',
+                                                  style={'textAlign': 'left', 'color': 'navy',
+                                                  'font-size': 15, 'font-family': 'Tahoma'}
+                                                  ),
                                       dcc.Dropdown(id='company_dropdown',
                                                   options=create_dropdown_options(df['Company']),
                                                   value='All',
                                                   placeholder="Select Company",
                                                   multi=True,
-                                                  searchable=True
+                                                  searchable=True,
+                                                  style={'textAlign': 'left', 'color': '#2e2d2d',
+                                                  'font-size': 14, 'font-family': 'Tahoma'}
                                                   ),
                                       
                                       # Range Slider for Salary selection
                                       html.Br(),
-                                      html.Label("Salary Range Selection (MXN):"),
+                                      html.Br(),
+                                      html.Label("Salary Range Selection (MXN):",
+                                                style={'textAlign': 'left', 'color': 'navy',
+                                                  'font-size': 15, 'font-family': 'Tahoma'}
+                                                ),
                                       dcc.RangeSlider(id='salary_slider',
                                                       min=0, max=100000, step=1000,
                                                       marks={0: '$0', 20000: '$20,000', 40000: '$40,000', 60000: '$60,000', 80000: '$80,000', 100000: '$100,000'},
-                                                      value=[min_salary, max_salary]),
+                                                      value=[min_salary, max_salary],
+                                                      ),
 
                                 ], id='left-container', 
                                 style={'margin-top': '50px',
-                                       'width': '100%', 
-                                       'height': '300px', 
+                                       'width': '25%', 
+                                       'height': '400px', 
                                        'background-color': '#B3D5FA', 
                                        'float': 'center', 
                                        'margin': '0'}
@@ -309,39 +388,65 @@ app.layout = html.Div(children=[
                                 # Third section: Plots
                                 html.Div(children=[
 
-                                      # Demand Plots
+                                      # First Plot
                                       html.Div(children=[
 
                                             # Job Demand Plot: Donnut chart
-                                            dcc.Graph(id='demand_job_plot'),
+                                            dcc.Graph(id='demand_job_plot'),                                   
+                                    
+                                            ], id='Donnut_chart',
+                                              style={'margin-top': '-400px',
+                                                      'margin-left': '340px',
+                                                      'width': '37.5%', 
+                                                      'height': '400px',                                                                                                            
+                                                      }                                                
+                                            ),
+
+                                      # Second plot
+                                      html.Div(children=[
                                       
+                                            # Job-Salary Plot: Boxplot
+                                                  dcc.Graph(id='salary_job_plot'),
+                                          
+                                          ], id='Boxplot',
+                                            style={'margin-top': '-400px',
+                                                    'margin-left': '850px',
+                                                    'width': '36%', 
+                                                    'height': '400px',                                                                                                            
+                                                    }                                                
+                                          ),
+                                      
+                              # Second Plot Section
+                              html.Div(children=[
+
+                                            #Third Plot
+                                            html.Div(children=[
+
                                             # Company Demand Plot: Treemap
                                             dcc.Graph(id='demand_company_plot'),
-                                      
-                                            # Location Demand Plot: Treemap
-                                            dcc.Graph(id='demand_location_plot'),
-                                      
-                                      ], id='visualization_demand',
-                                         style={'margin-top': '10px', 
-                                                'width': '100%',                                        
-                                                #'overflow': 'hidden',
-                                                'height': '350px'
-                                                }
-                                      ),
 
-                                      # Salary Plots
-                                      html.Div(children=[
-                                            
-                                            # Job-Salary Plot: Boxplot
-                                            dcc.Graph(id='salary_job_plot'),
+                                            ], id='Treemap',
+                                            style={'margin-top': '-350px',
+                                                    'margin-left': '10px', 
+                                                    'width': '50%',
+                                                    'height': '400px',                                                                                                            
+                                                    }                                                
+                                            ),                                 
+                                                                        
+                                            #Fourth Plot
+                                            html.Div(children=[       
+
+                                            # Location Demand Plot: Map
+                                            dcc.Graph(id='demand_location_plot'), 
+                                            ], id='Map',
+                                            style={'margin-top': '-400px',
+                                                    'margin-left': '690px', 
+                                                    'width': '48%',
+                                                    'height': '400px',                                                                                                            
+                                                    }                                                
+                                            ),                        
                                       
-                                            # Company-Salary Plot: Heatmap
-                                            dcc.Graph(id='salary_company_plot'),
-                                      
-                                            # Location-Salary Plot: Contourmap
-                                            dcc.Graph(id='salary_location_plot'),
-                                      
-                                      ], id='visualization_salary',
+                                      ], id='Second_plot_section',
                                          style={'margin-top': '360px', 
                                                   'width': '100%',                                        
                                                   #'overflow': 'hidden',
@@ -349,18 +454,46 @@ app.layout = html.Div(children=[
                                                   }
                                       ),
 
-                                
-                                ], id='right-container',
-                                style={#'margin-top': '50px',
-                                       'margin-left': '335px', 
-                                       'height': '1080px', 
-                                       #'background-color': '#CEE3F6'                                                                              
-                                       }
+                            # Third Plot Section
+                             html.Div(children=[
+
+                                      #Fifth Plot
+                                      html.Div(children=[
+
+                                            # Company-Salary Plot: Heatmap
+                                            dcc.Graph(id='salary_company_plot'),
+
+                                            ], id='Heatmap',
+                                            style={'margin-top': '-260px',
+                                                    'margin-left': '10px', 
+                                                    'width': '50%',
+                                                    'height': '720px',                                                                                                            
+                                                    }                                                
+                                            ),  
+
+                                      #Sixth Plot
+                                      html.Div(children=[
+
+                                            # Location-Salary Plot: Contourmap
+                                            dcc.Graph(id='salary_location_plot'),
+
+                                            ], id='Contourmap',
+                                            style={'margin-top': '-720px',
+                                                    'margin-left': '690px', 
+                                                    'width': '48%',
+                                                    'height': '720px',                                                                                                            
+                                                    }                                                
+                                            ), 
+
+
+                                ], id='Third_plot_section',                                
                                 ),
+                        ])
 
                         ], id='container',
                            style={'width': '100%', 
-                                  #'overflow': 'hidden',                                        
+                                  'overflow': 'hidden',
+                                  'background-color': 'aliceblue', 
                                  }
                       )        
 
@@ -380,61 +513,107 @@ app.layout = html.Div(children=[
                Input(component_id='company_dropdown', component_property='value'),
                Input(component_id='salary_slider', component_property='value')]
               )
-
 def update_output(job, location, company, salary):
   """
-  This function updates the output plots.
+  This function updates the output plots based on the parameters of:
+  - job
+  - location
+  - company
+  - salary
   """
   dff = df.copy()
   low, high = salary
-  mask = (dff['Salary'] > low) & (dff['Salary'] < high)
+  mask = (dff['Salary'] >= low) & (dff['Salary'] <= high)
   dff = dff[mask]
+
+  if (job or company or location or salary) == None:
+        raise PreventUpdate 
   
-  if (job and location and company) == 'All':
-
-        demand_job_plot = plot_pie_chart(dff)
-        demand_company_plot = plot_treemap(dff)
-        demand_location_plot = plot_cloropleth(dff)
-        salary_job_plot = plot_boxplot(dff)
-        salary_company_plot = plot_heatmap(dff)
-        salary_location_plot = plot_contour(dff)
-
-        return demand_job_plot, demand_company_plot, demand_location_plot, salary_job_plot, salary_company_plot, salary_location_plot
+  if 'All' in job and 'All' in location and 'All' in company:
+    
+    demand_job_plot = plot_pie_chart(dff)
+    demand_company_plot = plot_barchart(dff)
+    demand_location_plot = plot_cloropleth(dff)
+    salary_job_plot = plot_boxplot(dff)
+    salary_company_plot = plot_heatmap(dff)
+    salary_location_plot = plot_contour(dff)
 
   else:
-        if (job and location) == 'All':
-          dff = dff.loc[dff['Company'] == company] 
-        
-        if (job and company) == 'All':
-          dff = dff.loc[dff['Location'] == location] 
-        
-        if (company and location) == 'All':
-          dff = dff.loc[dff['Job'] == job]
-        
-        if job == 'All':
-          dff = dff.loc[dff['Location'] == location]
-          dff = dff.loc[dff['Company'] == company]
 
-        if location == 'All':
-          dff = dff.loc[dff['Job'] == job]
-          dff = dff.loc[dff['Company'] == company]
+        if ('All' in (company and location)) and ('All' not in job):
+          dff = dff[dff.Job.isin(job)]
 
-        if company == 'All':
-          dff = dff.loc[dff['Location'] == location]
-          dff = dff.loc[dff['Job'] == job]
+          demand_job_plot = plot_pie_chart(dff)
+          demand_company_plot = plot_barchart(dff)
+          demand_location_plot = plot_cloropleth(dff)
+          salary_job_plot = plot_boxplot(dff)
+          salary_company_plot = plot_heatmap(dff)
+          salary_location_plot = plot_contour(dff)
+        
+        elif ('All' in (job and location)) and ('All' not in company):
+          dff = dff[dff.Company.isin(company)]
+
+          demand_job_plot = plot_pie_chart(dff)
+          demand_company_plot = plot_barchart(dff)
+          demand_location_plot = plot_cloropleth(dff)
+          salary_job_plot = plot_boxplot(dff)
+          salary_company_plot = plot_heatmap(dff)
+          salary_location_plot = plot_contour(dff)
+        
+        elif ('All' in (company and job)) and ('All' not in location):
+          dff = dff[dff.Location.isin(location)]
+
+          demand_job_plot = plot_pie_chart(dff)
+          demand_company_plot = plot_barchart(dff)
+          demand_location_plot = plot_cloropleth(dff)
+          salary_job_plot = plot_boxplot(dff)
+          salary_company_plot = plot_heatmap(dff)
+          salary_location_plot = plot_contour(dff)              
+        
+        elif ('All' in job) and ('All' not in (company and location)):
+          dff = dff[(dff.Company.isin(company)) & (dff.Location.isin(location))]
+
+          demand_job_plot = plot_pie_chart(dff)
+          demand_company_plot = plot_barchart(dff)
+          demand_location_plot = plot_cloropleth(dff)
+          salary_job_plot = plot_boxplot(dff)
+          salary_company_plot = plot_heatmap(dff)
+          salary_location_plot = plot_contour(dff)
+
+        elif ('All' in location) and ('All' not in (company and job)):
+          dff = dff[(dff.Company.isin(company)) & (dff.Job.isin(job))]
+
+          demand_job_plot = plot_pie_chart(dff)
+          demand_company_plot = plot_barchart(dff)
+          demand_location_plot = plot_cloropleth(dff)
+          salary_job_plot = plot_boxplot(dff)
+          salary_company_plot = plot_heatmap(dff)
+          salary_location_plot = plot_contour(dff)
+
+        elif ('All' in company) and ('All' not in (location and job)):
+          dff = dff[(dff.Location.isin(location)) & (dff.Job.isin(job))]
+
+          demand_job_plot = plot_pie_chart(dff)
+          demand_company_plot = plot_barchart(dff)
+          demand_location_plot = plot_cloropleth(dff)
+          salary_job_plot = plot_boxplot(dff)
+          salary_company_plot = plot_heatmap(dff)
+          salary_location_plot = plot_contour(dff)
+
+        elif 'All' not in (company and location and job):
+          dff = dff[(dff.Job.isin(job)) & (dff.Location.isin(location)) & (dff.Company.isin(company))]
+
+          demand_job_plot = plot_pie_chart(dff)
+          demand_company_plot = plot_barchart(dff)
+          demand_location_plot = plot_cloropleth(dff)
+          salary_job_plot = plot_boxplot(dff)
+          salary_company_plot = plot_heatmap(dff)
+          salary_location_plot = plot_contour(dff)
+        
         else:
-          dff = dff.loc[dff['Job'] == job]
-          dff = dff.loc[dff['Location'] == location]
-          dff = dff.loc[dff['Company'] == company]
+          raise PreventUpdate 
 
-        demand_job_plot = plot_pie_chart(dff)
-        demand_company_plot = plot_treemap(dff)
-        demand_location_plot = plot_cloropleth(dff)
-        salary_job_plot = plot_boxplot(dff)
-        salary_company_plot = plot_heatmap(dff)
-        salary_location_plot = plot_contour(dff)
-
-        return demand_job_plot, demand_company_plot, demand_location_plot, salary_job_plot, salary_company_plot, salary_location_plot
+  return demand_job_plot, demand_company_plot, demand_location_plot, salary_job_plot, salary_company_plot, salary_location_plot
 
 # Run the app
 if __name__ == '__main__':
