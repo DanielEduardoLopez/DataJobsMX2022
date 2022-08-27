@@ -37,7 +37,7 @@ def plot_pie_chart(df):
   pie_colors = ['#06477D','#84BDEC','#B4D4EF', '#C8E4FC','aliceblue']
   demand_job_plot = px.pie(job_df, values='Count', names='Job', color = 'Job', hole = 0.7,  
                            color_discrete_sequence=px.colors.sequential.Blues_r,
-                           height=400,
+                           height=450,
                            title='Demand of Data Jobs Per Category')
   demand_job_plot.update_traces(hoverinfo='label+percent+name', textinfo='percent', textfont_size=16,
                     marker=dict(colors=pie_colors, line=dict(color='white', width=4)))
@@ -68,21 +68,23 @@ def plot_treemap(df):
 def plot_barchart(df):
 
   top = 15
+  bar_colors = ['#84BDEC',] * 14
+  bar_colors.insert(14,'#06477D')
   company_df = df.groupby(by = 'Company', as_index= False)['Job'].count().sort_values(by = 'Job', ascending = False).rename(columns = {'Job': 'Vacancies'})[:top]
   company_df['Company'] = company_df['Company'].map(lambda x: x[:25])
   company_df = company_df[company_df['Vacancies'] > 0]
 
   demand_company_plot = px.bar(company_df.sort_values(by = 'Vacancies'), x='Vacancies', y='Company',
-            color = 'Vacancies', color_continuous_scale=px.colors.sequential.Blues,
+            color = 'Vacancies', color_continuous_scale=bar_colors,
             #text="Vacancies", 
             height=450,
             title= f'Top {top} Companies Demanding Data Jobs')
-  #demand_company_plot.update_traces(marker_color= '#06477D', marker_line_color='#06477D', textfont_size=11, textangle=0, textposition="outside", cliponaxis=False)
+  demand_company_plot.update_traces(marker_color= bar_colors, marker_line_color='#06477D', textfont_size=11, textangle=0, textposition="outside", cliponaxis=False)
   demand_company_plot.update_layout(transition_duration=400, title_x=0.5)
 
   return demand_company_plot
 
-# Location Demand: Cloropleth
+# Location Demand: Choropleth Map
 def plot_cloropleth(df):
 
   # States dictionary with corresponding ID
@@ -134,7 +136,7 @@ def plot_cloropleth(df):
                             color='Percentage',
                             color_continuous_scale="Blues",
                             scope="north america",
-                            title='Demand of Data Jobs per Mexican State',
+                            #title='Demand of Data Jobs per Mexican State',
                             labels={'Percentage':'National Demand %'}
                             )
   demand_location_plot.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, transition_duration=300)
@@ -156,7 +158,7 @@ def plot_boxplot(df):
                                   "Salary": "Monthly Salary (MXN)",
                                   "Job": "Data Job Category"},
                           title='Salary Per Data Job Category',
-                          height=400
+                          height=450
                           )
   salary_job_plot.update_traces(showlegend=False)
   salary_job_plot.update_layout(transition_duration=400, title_x=0.5)
@@ -363,6 +365,21 @@ app.layout = html.Div(children=[
                                                   'font-size': 14, 'font-family': 'Tahoma'}
                                                   ),
                                       
+                                      # Checkbox for selecting only positions with disclosed salary 
+                                      html.Br(),
+                                      html.Br(),
+                                      dcc.Checklist(id='salary_filter',
+                                                      options=['Enable Salary Range Selection'],
+                                                      inline=True,
+                                                      style={'textAlign': 'left', 'color': 'navy',
+                                                      'font-size': 15, 'font-family': 'Tahoma'}
+                                                      ),
+                                      html.Label("(Displays Only Positions With Disclosed Salary)",
+                                                style={'textAlign': 'center', 'color': 'navy',
+                                                  'font-size': 12, 'font-family': 'Tahoma'}
+                                                ),
+                                      
+                                      
                                       # Range Slider for Salary selection
                                       html.Br(),
                                       html.Br(),
@@ -375,14 +392,17 @@ app.layout = html.Div(children=[
                                                       marks={0: '$0', 20000: '$20,000', 40000: '$40,000', 60000: '$60,000', 80000: '$80,000', 100000: '$100,000'},
                                                       value=[min_salary, max_salary],
                                                       ),
+                                      
+                                                                                           
 
                                 ], id='left-container', 
                                 style={'margin-top': '50px',
-                                       'width': '25%', 
-                                       'height': '400px', 
+                                        'margin-left': '10px',
+                                        'width': '25%', 
+                                       'height': '450px', 
                                        'background-color': '#B3D5FA', 
                                        'float': 'center', 
-                                       'margin': '0'}
+                                       }
                                 ),
 
                                 # Third section: Plots
@@ -395,10 +415,10 @@ app.layout = html.Div(children=[
                                             dcc.Graph(id='demand_job_plot'),                                   
                                     
                                             ], id='Donnut_chart',
-                                              style={'margin-top': '-400px',
-                                                      'margin-left': '340px',
-                                                      'width': '37.5%', 
-                                                      'height': '400px',                                                                                                            
+                                              style={'margin-top': '-450px',
+                                                      'margin-left': '350px',
+                                                      'width': '36%', 
+                                                      'height': '450px',                                                                                                            
                                                       }                                                
                                             ),
 
@@ -409,10 +429,10 @@ app.layout = html.Div(children=[
                                                   dcc.Graph(id='salary_job_plot'),
                                           
                                           ], id='Boxplot',
-                                            style={'margin-top': '-400px',
-                                                    'margin-left': '850px',
-                                                    'width': '36%', 
-                                                    'height': '400px',                                                                                                            
+                                            style={'margin-top': '-450px',
+                                                    'margin-left': '840px',
+                                                    'width': '36.5%', 
+                                                    'height': '450px',                                                                                                            
                                                     }                                                
                                           ),
                                       
@@ -511,9 +531,10 @@ app.layout = html.Div(children=[
               [Input(component_id='job_dropdown', component_property='value'),
                Input(component_id='location_dropdown', component_property='value'),
                Input(component_id='company_dropdown', component_property='value'),
-               Input(component_id='salary_slider', component_property='value')]
+               Input(component_id='salary_slider', component_property='value'),
+               Input(component_id='salary_filter', component_property='value')]
               )
-def update_output(job, location, company, salary):
+def update_output(job, location, company, salary, salary_filter):
   """
   This function updates the output plots based on the parameters of:
   - job
@@ -523,8 +544,10 @@ def update_output(job, location, company, salary):
   """
   dff = df.copy()
   low, high = salary
-  mask = (dff['Salary'] >= low) & (dff['Salary'] <= high)
-  dff = dff[mask]
+
+  if salary_filter == ['Enable Salary Range Selection']:
+    mask = (dff['Salary'] >= low) & (dff['Salary'] <= high)
+    dff = dff[mask]
 
   if (job or company or location or salary) == None:
         raise PreventUpdate 
