@@ -23,7 +23,7 @@ from dash.exceptions import PreventUpdate
 import plotly.express as px
 
 # Read the Job data into a Pandas dataframe
-df = pd.read_csv("Dataset_Clean.csv").rename(columns = {'Average Salary': 'Salary'})
+df = pd.read_csv("https://raw.githubusercontent.com/DanielEduardoLopez/DataJobsMX2022/main/Dataset_Clean.csv").rename(columns = {'Average Salary': 'Salary'})
 
 max_salary = df['Salary'].max()
 min_salary = df['Salary'].min()
