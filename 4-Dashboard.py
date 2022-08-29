@@ -78,7 +78,8 @@ def plot_barchart(df):
             color = 'Vacancies', color_continuous_scale=bar_colors,
             #text="Vacancies", 
             height=450,
-            title= f'Top {top} Companies Demanding Data Jobs')
+            title= f'Top {top} Companies Demanding Data Jobs',
+            opacity = 0.8)
   demand_company_plot.update_traces(marker_color= bar_colors, marker_line_color='#06477D', textfont_size=11, textangle=0, textposition="outside", cliponaxis=False)
   demand_company_plot.update_layout(transition_duration=400, title_x=0.5)
 
@@ -162,6 +163,7 @@ def plot_boxplot(df):
                           )
   salary_job_plot.update_traces(showlegend=False)
   salary_job_plot.update_layout(transition_duration=400, title_x=0.5)
+  salary_job_plot.update_yaxes(tickformat = '$,~s')
 
   return salary_job_plot
 
