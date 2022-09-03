@@ -150,7 +150,7 @@ python 4-Dashboard.py
 And visit http://127.0.0.1:8050/ in your web browser.
 
 <p align="center">
-	<img src="Images/Dashboard.jpg?raw=true" width=65% height=65%>
+	<img src="Images/Dashboard.png?raw=true" width=65% height=65%>
 </p>
 
 Please note that Python 3 and its libraries Numpy, Pandas, Dash and Plotly are required for properly running the dashboard.
