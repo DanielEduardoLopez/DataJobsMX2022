@@ -40,6 +40,7 @@ The methodology of the present study is based on Rollin’s Foundational Methodo
 6) **Statistical analysis**: The D'Agostino-Pearson normality test was used to assess the normality of the data jobs salary distribution. Then, both parametric (ANOVA and t-test with unequal variance) and non-parametric (Mann-Whitney U and Kruskal-Wallis H) tests were carried out to assess the significance of the obtained results.
 
 Furthermore:
+
 7) A **dashboard** was built with Python 3 and its libraries Plotly and Dash.
 8) A **final report** was written with the complete results obtained from the data.
 9) Some **slides** were prepared with the **most important insights** from the report.
@@ -95,7 +96,7 @@ Notwithstanding with the above, for the purposes of the present study, both para
 The salaries for each data job category are shown in the following box plot:
 
 <p align="center">
-	<img src="Images/Fig11_SalaryPerDataJobCategory" width=60% height=60%>
+	<img src="Images/Fig11_SalaryPerDataJobCategory.png" width=60% height=60%>
 </p>
 
 The figure above suggests that, after removing the outliers, the average salaries for the different data jobs categories are:
