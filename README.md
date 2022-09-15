@@ -1,3 +1,8 @@
+<p align="center">
+	<img src="Images/Header.png?raw=true" width=80% height=80%>
+</p>
+
+
 # Data Jobs Salaries in Mexico in August 2022
 #### By Daniel Eduardo López
 
@@ -103,11 +108,11 @@ The figure above suggests that, after removing the outliers, the average salarie
 
 Data Job Category | Average Monthly Salary (MXN)
 ---|---
-Data Architect | $64,000 
-Data Scientist | $45,000
-Data Engineer | $38,000 
-Business Analyst | $33,000
-Data Analyst | $19,000 
+Data Architect | $63,750 
+Data Scientist | $46,250
+Data Engineer | $37,500 
+Business Analyst | $32,500
+Data Analyst | $18,400 
 
 A further one-way analysis of variance (ANOVA) procedure and a Kruskal-Wallis H test confirmed that the salary differences among the data jobs categories were statistically significant at a signification level of $\alpha$ = 0.05 (*p*-value < 0.001 in both tests).
 
