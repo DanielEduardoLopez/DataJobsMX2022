@@ -34,14 +34,14 @@ min_salary = df['Salary'].min()
 def plot_pie_chart(df):
 
   job_df = pd.DataFrame(df['Job'].value_counts().reset_index().rename(columns = {'index': 'Job', 'Job': 'Count'}))
-  pie_colors = ['#06477D','#84BDEC','#B4D4EF', '#C8E4FC','aliceblue']
+  pie_colors = ['#06477D','#84BDEC','#B4D4EF', '#C8E4FC','white']
   demand_job_plot = px.pie(job_df, values='Count', names='Job', color = 'Job', hole = 0.7,  
                            color_discrete_sequence=px.colors.sequential.Blues_r,
                            height=450,
                            title='Demand of Data Jobs Per Category')
   demand_job_plot.update_traces(hoverinfo='label+percent+name', textinfo='percent', textfont_size=16,
-                    marker=dict(colors=pie_colors, line=dict(color='white', width=4)))
-  demand_job_plot.update_layout(transition_duration=400, title_x=0.5)
+                    marker=dict(colors=pie_colors, line=dict(color="rgba(0,0,0,0)", width=4)))
+  demand_job_plot.update_layout(transition_duration=400, title_x=0.5, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
   
   return demand_job_plot
 
@@ -60,7 +60,7 @@ def plot_treemap(df):
                                   color_continuous_scale=px.colors.sequential.Blues,
                                   title= f'Top {top} Companies Demanding Data Jobs'
                                   )
-  demand_company_plot.update_layout(transition_duration=400)
+  demand_company_plot.update_layout(transition_duration=400, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
 
   return demand_company_plot
 
@@ -81,7 +81,7 @@ def plot_barchart(df):
             title= f'Top {top} Companies Demanding Data Jobs',
             opacity = 0.8)
   demand_company_plot.update_traces(marker_color= bar_colors, marker_line_color='#06477D', textfont_size=11, textangle=0, textposition="outside", cliponaxis=False)
-  demand_company_plot.update_layout(transition_duration=400, title_x=0.5)
+  demand_company_plot.update_layout(transition_duration=400, title_x=0.5, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
 
   return demand_company_plot
 
@@ -138,9 +138,10 @@ def plot_cloropleth(df):
                             color_continuous_scale="Blues",
                             scope="north america",
                             #title='Demand of Data Jobs per Mexican State',
-                            labels={'Percentage':'National Demand %'}
+                            labels={'Percentage':'National <br>Demand %'}
                             )
-  demand_location_plot.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, transition_duration=300)
+  demand_location_plot.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, transition_duration=300,
+                                    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", geo_bgcolor = "rgba(0,0,0,0)")
   demand_location_plot.update_geos(fitbounds="locations", visible=False)
   demand_location_plot.update_layout(transition_duration=400, title_x=0.5)
   
@@ -162,7 +163,7 @@ def plot_boxplot(df):
                           height=450
                           )
   salary_job_plot.update_traces(showlegend=False)
-  salary_job_plot.update_layout(transition_duration=400, title_x=0.5)
+  salary_job_plot.update_layout(transition_duration=400, title_x=0.5, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
   salary_job_plot.update_yaxes(tickformat = '$,~s')
 
   return salary_job_plot
@@ -187,7 +188,8 @@ def plot_heatmap(df):
                           title='Salary Per Company And Data Job Category',
                           labels={"Job": "Data Job Category"}
                           )
-  salary_company_plot.update_layout(transition_duration=400, title_x=0.5, coloraxis_colorbar=dict(title="Avg. Mth. Salary (MXN)"))
+  salary_company_plot.update_layout(transition_duration=400, title_x=0.5, coloraxis_colorbar=dict(title="Avg. Mth. <br>Salary (MXN)"),
+                                    paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
   salary_company_plot.update_coloraxes(colorbar_tickformat = '$,~s')
   return salary_company_plot
 
@@ -256,8 +258,9 @@ def plot_contour(df):
                           )
   salary_location_plot.update_traces(contours_coloring="fill", contours_showlabels = True, 
                                     colorscale = 'Blues', colorbar_tickformat='$,~s',
-                                    colorbar_title_text='Avg. Mth. Salary (MXN)')
-  salary_location_plot.update_layout(transition_duration=400, title_x=0.5, coloraxis_colorbar=dict(title="Vacancies"))
+                                    colorbar_title_text='Avg. Mth. <br>Salary (MXN)')
+  salary_location_plot.update_layout(transition_duration=400, title_x=0.5, coloraxis_colorbar=dict(title="Vacancies"),
+                                      paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
 
   return salary_location_plot
 
@@ -295,13 +298,13 @@ app.layout = html.Div(children=[
                                                'font-size': 12, 'font-family': 'Tahoma',
                                                'margin': 'auto',
                                                'display': 'block'}),
-                                html.Br(),
+                                
                                 dcc.Link(html.A('LinkedIn'), href="https://www.linkedin.com/in/daniel-eduardo-lopez",
                                         style={'textAlign': 'center', 'color': 'navy',
                                                'font-size': 12, 'font-family': 'Tahoma',
                                                'margin': 'auto',
                                                'display': 'block'}),
-                                html.Br(),
+                                # html.Br(),
                                 
                                 # Adding a very brief Introduction to the Dashboard
                                 html.P("This Dashboard shows the Data Jobs demand and salaries in Mexico in August 2022.",
@@ -318,7 +321,7 @@ app.layout = html.Div(children=[
                                 
                                       # Dropdown list to enable Data Job selection
                                       html.Br(),
-                                      html.Br(),
+                                      #html.Br(),
                                       html.Label("Data Job Selection:", className='dropdown-labels',
                                                 style={'textAlign': 'left', 'color': 'navy',
                                                   'font-size': 15, 'font-family': 'Tahoma'}
@@ -335,7 +338,7 @@ app.layout = html.Div(children=[
                                                                       
                                       # Dropdown list to enable Location selection
                                       html.Br(),
-                                      html.Br(),
+                                      #html.Br(),
                                       html.Label("Location Selection:", className='dropdown-labels',
                                                 style={'textAlign': 'left', 'color': 'navy',
                                                   'font-size': 15, 'font-family': 'Tahoma'}
@@ -352,7 +355,7 @@ app.layout = html.Div(children=[
                                 
                                       # Dropdown list to enable Company selection
                                       html.Br(),
-                                      html.Br(),
+                                      #html.Br(),
                                       html.Label("Company Selection:", className='dropdown-labels',
                                                   style={'textAlign': 'left', 'color': 'navy',
                                                   'font-size': 15, 'font-family': 'Tahoma'}
@@ -369,7 +372,7 @@ app.layout = html.Div(children=[
                                       
                                       # Checkbox for selecting only positions with disclosed salary 
                                       html.Br(),
-                                      html.Br(),
+                                      #html.Br(),
                                       dcc.Checklist(id='salary_filter',
                                                       options=['Enable Salary Range Selection'],
                                                       inline=True,
@@ -398,10 +401,10 @@ app.layout = html.Div(children=[
                                                                                            
 
                                 ], id='left-container', 
-                                style={'margin-top': '50px',
+                                style={'margin-top': '10px',
                                         'margin-left': '10px',
                                         'width': '25%', 
-                                       'height': '450px', 
+                                       'height': '400px', 
                                        'background-color': '#B3D5FA', 
                                        'float': 'center', 
                                        }
@@ -417,10 +420,10 @@ app.layout = html.Div(children=[
                                             dcc.Graph(id='demand_job_plot'),                                   
                                     
                                             ], id='Donnut_chart',
-                                              style={'margin-top': '-450px',
+                                              style={'margin-top': '-400px',
                                                       'margin-left': '350px',
                                                       'width': '36%', 
-                                                      'height': '450px',                                                                                                            
+                                                      'height': '400px',                                                                                                            
                                                       }                                                
                                             ),
 
@@ -431,10 +434,10 @@ app.layout = html.Div(children=[
                                                   dcc.Graph(id='salary_job_plot'),
                                           
                                           ], id='Boxplot',
-                                            style={'margin-top': '-450px',
-                                                    'margin-left': '840px',
+                                            style={'margin-top': '-400px',
+                                                    'margin-left': '60%',
                                                     'width': '36.5%', 
-                                                    'height': '450px',                                                                                                            
+                                                    'height': '400px',                                                                                                            
                                                     }                                                
                                           ),
                                       
@@ -448,8 +451,8 @@ app.layout = html.Div(children=[
                                             dcc.Graph(id='demand_company_plot'),
 
                                             ], id='Treemap',
-                                            style={'margin-top': '-350px',
-                                                    'margin-left': '10px', 
+                                            style={'margin-top': '-330px',
+                                                    'margin-left': '20px', 
                                                     'width': '50%',
                                                     'height': '400px',                                                                                                            
                                                     }                                                
@@ -461,10 +464,10 @@ app.layout = html.Div(children=[
                                             # Location Demand Plot: Map
                                             dcc.Graph(id='demand_location_plot'), 
                                             ], id='Map',
-                                            style={'margin-top': '-400px',
-                                                    'margin-left': '690px', 
+                                            style={'margin-top': '-380px',
+                                                    'margin-left': '47%', 
                                                     'width': '48%',
-                                                    'height': '400px',                                                                                                            
+                                                    'height': '380px',                                                                                                            
                                                     }                                                
                                             ),                        
                                       
@@ -486,7 +489,7 @@ app.layout = html.Div(children=[
                                             dcc.Graph(id='salary_company_plot'),
 
                                             ], id='Heatmap',
-                                            style={'margin-top': '-260px',
+                                            style={'margin-top': '-280px',
                                                     'margin-left': '10px', 
                                                     'width': '50%',
                                                     'height': '720px',                                                                                                            
@@ -501,7 +504,7 @@ app.layout = html.Div(children=[
 
                                             ], id='Contourmap',
                                             style={'margin-top': '-720px',
-                                                    'margin-left': '690px', 
+                                                    'margin-left': '51%', 
                                                     'width': '48%',
                                                     'height': '720px',                                                                                                            
                                                     }                                                
