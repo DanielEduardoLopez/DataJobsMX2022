@@ -10,8 +10,6 @@
 
 **[LinkedIn](https://www.linkedin.com/in/daniel-eduardo-lopez)**
 
-**[Email](mailto:daniel-eduardo-lopez@outlook.com)**
-
 ____
 ### **1. Introduction**
 With the emergence of the big data, new jobs have appeared demanding new sets of skills and expertise for extracting value from data (Axis Talent, 2020):
