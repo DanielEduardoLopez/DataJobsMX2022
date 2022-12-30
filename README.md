@@ -50,7 +50,7 @@ Furthermore:
 
 ___
 ### **6. Main Results**
-From the sample of 444 data jobs retreived, the most demanded data job category was **Data Analyst**, with 36% of the total demand of data jobs in Mexico at the time of this study. On the contrary, **Data Architect** positions are the less demanded, with only a 3% out of the total.
+From the sample of 444 data jobs retrieved, the most demanded data job category was **Data Analyst**, with 36% of the total demand of data jobs in Mexico at the time of this study. On the contrary, **Data Architect** positions are the less demanded, with only a 3% out of the total.
 
 <p align="center">
 	<img src="Images/Fig1_DemandOfDataJobsPerCategory.png?raw=true" width=60% height=60%>
